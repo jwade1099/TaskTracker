@@ -269,7 +269,7 @@ export default function Home() {
                   <CardDescription>{task.description.substring(0, 50)}...</CardDescription>
                   {task.dueDate && (
                     <div className="text-sm text-muted-foreground mt-2">
-                      Due Date: {format(new Date(task.dueDate!), 'MM/dd/yyyy')}
+                      Due Date: {format(new Date(task.dueDate), 'MM/dd/yyyy')}
                     </div>
                   )}
                   <div className="flex flex-wrap gap-1 mt-2">
