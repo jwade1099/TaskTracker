@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Task {
   id: string;
@@ -65,6 +66,7 @@ export default function Home() {
   const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [hydrated, setHydrated] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setHydrated(true);
@@ -249,8 +251,8 @@ export default function Home() {
             <div
               key={task.id}
               className="mb-2"
-              draggable
-              onDragStart={() => handleDragStart(task, column.id)}
+              draggable={!isMobile}
+              onDragStart={isMobile ? undefined : () => handleDragStart(task, column.id)}
               onClick={() => handleTaskClick(task)}
             >
               <Card>
