@@ -34,22 +34,22 @@ const initialColumns: Column[] = [
     id: 'todo',
     title: 'To Do',
     tasks: [
-      { id: '1', title: 'Plan TaskFlow Kanban', description: 'Define project scope and features.', tags: ['planning'], dueDate: new Date().toISOString(), completed: false },
-      { id: '2', title: 'Set up Next.js project', description: 'Initialize project with necessary dependencies.', tags: ['setup', 'nextjs'], dueDate: new Date().toISOString(), completed: false },
+      { id: '1', title: 'Plan TaskFlow Kanban', description: 'Define project scope and features.', tags: ['planning'], dueDate: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(), completed: false },
+      { id: '2', title: 'Set up Next.js project', description: 'Initialize project with necessary dependencies.', tags: ['setup', 'nextjs'], dueDate: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(), completed: false },
     ],
   },
   {
     id: 'inprogress',
     title: 'In Progress',
     tasks: [
-      { id: '3', title: 'Implement drag and drop', description: 'Enable task movement between columns.', tags: ['drag-and-drop', 'ui'], dueDate: new Date().toISOString(), completed: false },
+      { id: '3', title: 'Implement drag and drop', description: 'Enable task movement between columns.', tags: ['drag-and-drop', 'ui'], dueDate: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(), completed: false },
     ],
   },
   {
     id: 'done',
     title: 'Done',
     tasks: [
-      { id: '4', title: 'Design UI components', description: 'Create basic UI elements.', tags: ['ui', 'design'], dueDate: new Date().toISOString(), completed: true },
+      { id: '4', title: 'Design UI components', description: 'Create basic UI elements.', tags: ['ui', 'design'], dueDate: new Date(new Date().setDate(new Date().getDate() + 4)).toISOString(), completed: true },
     ],
   },
 ];
@@ -65,6 +65,7 @@ export default function Home() {
   const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [hydrated, setHydrated] = useState(false);
+    const [newTaskTitle, setNewTaskTitle] = useState('');
 
   useEffect(() => {
     setHydrated(true);
@@ -194,6 +195,32 @@ export default function Home() {
     setColumns(newColumns);
   };
 
+  const handleCreateNewTask = (columnId: string) => {
+    if (newTaskTitle.trim() === '') {
+      alert('Please enter a task title.');
+      return;
+    }
+
+    const newTask: Task = {
+      id: Math.random().toString(36).substring(2, 15), // Generate a random ID
+      title: newTaskTitle,
+      description: '',
+      tags: [],
+      dueDate: new Date().toISOString(),
+      completed: false,
+    };
+
+    const newColumns = columns.map(col => {
+      if (col.id === columnId) {
+        return { ...col, tasks: [...col.tasks, newTask] };
+      }
+      return col;
+    });
+
+    setColumns(newColumns);
+    setNewTaskTitle(''); // Clear the input
+  };
+
   if (!hydrated) {
     return null;
   }
@@ -207,10 +234,27 @@ export default function Home() {
           onDragOver={handleDragOver}
           onDrop={() => handleDrop(column.id)}
         >
-          <h2 className="text-lg font-semibold mb-2">
-            {column.title}
-            {column.id === 'done' && isDoneSatisfying(column) && ' 🎉'}
-          </h2>
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-lg font-semibold">
+              {column.title}
+              {column.id === 'done' && isDoneSatisfying(column) && ' 🎉'}
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-teal-500 text-white hover:bg-teal-700"
+              onClick={() => {
+                const title = prompt("Enter task title:");
+                if (title) {
+                  setNewTaskTitle(title);
+                  handleCreateNewTask(column.id);
+                }
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="sr-only">Add task</span>
+            </Button>
+          </div>
           {column.tasks.map((task) => (
             <div
               key={task.id}
@@ -232,7 +276,7 @@ export default function Home() {
                   <CardDescription>{task.description.substring(0, 50)}...</CardDescription>
                   {task.dueDate && (
                     <div className="text-sm text-muted-foreground mt-2">
-                      Due Date: {format(new Date(task.dueDate), 'MM/dd/yyyy')}
+                      Due Date: {format(new Date(task.dueDate!), 'MM/dd/yyyy')}
                     </div>
                   )}
                   <div className="flex flex-wrap gap-1 mt-2">
