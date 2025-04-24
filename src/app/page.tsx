@@ -65,7 +65,7 @@ export default function Home() {
   const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [hydrated, setHydrated] = useState(false);
-    const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
 
   useEffect(() => {
     setHydrated(true);
@@ -225,6 +225,14 @@ export default function Home() {
     return null;
   }
 
+  const handleAddTaskClick = () => {
+    const title = prompt("Enter task title:");
+    if (title) {
+      setNewTaskTitle(title);
+      handleCreateNewTask('todo'); // Always add to 'todo' column
+    }
+  };
+
   return (
     <div className="flex flex-row h-screen bg-background p-4">
       {columns.map((column) => (
@@ -239,21 +247,6 @@ export default function Home() {
               {column.title}
               {column.id === 'done' && isDoneSatisfying(column) && ' 🎉'}
             </h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-teal-500 text-white hover:bg-teal-700"
-              onClick={() => {
-                const title = prompt("Enter task title:");
-                if (title) {
-                  setNewTaskTitle(title);
-                  handleCreateNewTask(column.id);
-                }
-              }}
-            >
-              <Plus className="h-4 w-4" />
-              <span className="sr-only">Add task</span>
-            </Button>
           </div>
           {column.tasks.map((task) => (
             <div
@@ -290,6 +283,13 @@ export default function Home() {
           ))}
         </div>
       ))}
+
+      <Button
+        className="fixed bottom-4 right-4 rounded-full bg-teal-500 text-white hover:bg-teal-700"
+        onClick={handleAddTaskClick}
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
