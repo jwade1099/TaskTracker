@@ -65,7 +65,6 @@ export default function Home() {
   const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [hydrated, setHydrated] = useState(false);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
 
   useEffect(() => {
     setHydrated(true);
@@ -195,15 +194,15 @@ export default function Home() {
     setColumns(newColumns);
   };
 
-  const handleCreateNewTask = (columnId: string) => {
-    if (newTaskTitle.trim() === '') {
+  const handleCreateNewTask = (title: string) => {
+    if (!title || title.trim() === '') {
       alert('Please enter a task title.');
       return;
     }
 
     const newTask: Task = {
       id: Math.random().toString(36).substring(2, 15), // Generate a random ID
-      title: newTaskTitle,
+      title: title,
       description: '',
       tags: [],
       dueDate: new Date().toISOString(),
@@ -211,14 +210,13 @@ export default function Home() {
     };
 
     const newColumns = columns.map(col => {
-      if (col.id === columnId) {
+      if (col.id === 'todo') {
         return { ...col, tasks: [...col.tasks, newTask] };
       }
       return col;
     });
 
     setColumns(newColumns);
-    setNewTaskTitle(''); // Clear the input
   };
 
   if (!hydrated) {
@@ -228,8 +226,7 @@ export default function Home() {
   const handleAddTaskClick = () => {
     const title = prompt("Enter task title:");
     if (title) {
-      setNewTaskTitle(title);
-      handleCreateNewTask('todo'); // Always add to 'todo' column
+      handleCreateNewTask(title);
     }
   };
 
