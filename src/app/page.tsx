@@ -231,11 +231,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-row h-screen bg-background p-4">
+    <div className="flex sm:flex-row flex-col h-screen bg-background p-4">
       {columns.map((column) => (
         <div
           key={column.id}
-          className="w-1/4 p-2"
+          className="sm:w-1/4 w-full p-2"
           onDragOver={handleDragOver}
           onDrop={() => handleDrop(column.id)}
         >
